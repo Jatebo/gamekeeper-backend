@@ -2,6 +2,7 @@ const {
   formatCategories,
   formatUserData,
   formatReviewData,
+  formatCommentData,
 } = require("../db/utils/data-manipulation.js");
 
 describe("formatCategories", () => {
@@ -333,6 +334,92 @@ describe("formatReviewData", () => {
         category: "social deduction",
         created_at: new Date(1610964101251),
         votes: 5,
+      },
+    ]);
+  });
+});
+
+describe("formatCommentData", () => {
+  test("should take an array of comment objects, and return an array of inputtable comment info in the order [author, review_id, votes, created_at, body]", () => {
+    const testInput = [
+      {
+        body: "I loved this game too!",
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: new Date(1511354613389),
+      },
+      {
+        body: "My dog loved this game too!",
+        votes: 13,
+        author: "mallionaire",
+        review_id: 3,
+        created_at: new Date(1610964545410),
+      },
+    ];
+    const expectedOutput = [
+      ["bainesface", 2, 16, new Date(1511354613389), "I loved this game too!"],
+      [
+        "mallionaire",
+        3,
+        13,
+        new Date(1610964545410),
+        "My dog loved this game too!",
+      ],
+    ];
+    expect(formatCommentData(testInput)).toEqual(expectedOutput);
+  });
+  test("should return a new array", () => {
+    const testInput = [
+      {
+        body: "I loved this game too!",
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: new Date(1511354613389),
+      },
+      {
+        body: "My dog loved this game too!",
+        votes: 13,
+        author: "mallionaire",
+        review_id: 3,
+        created_at: new Date(1610964545410),
+      },
+    ];
+    expect(formatCommentData(testInput)).not.toBe(testInput);
+  });
+  test("should not manipulate the original input array", () => {
+    const testInput = [
+      {
+        body: "I loved this game too!",
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: new Date(1511354613389),
+      },
+      {
+        body: "My dog loved this game too!",
+        votes: 13,
+        author: "mallionaire",
+        review_id: 3,
+        created_at: new Date(1610964545410),
+      },
+    ];
+    formatCommentData(testInput);
+    expect(testInput).toEqual([
+      {
+        author: "bainesface",
+        review_id: 2,
+        votes: 16,
+        created_at: new Date(1511354613389),
+        body: "I loved this game too!",
+      },
+      {
+        author: "mallionaire",
+        review_id: 3,
+        votes: 13,
+        created_at: new Date(1610964545410),
+        body: "My dog loved this game too!",
       },
     ]);
   });

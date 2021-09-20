@@ -26,3 +26,15 @@ exports.formatReviewData = (data) => {
     ];
   });
 };
+
+exports.formatCommentData = (data) => {
+  return data.map((item) => {
+    return [
+      item.author,
+      item.review_id,
+      item.votes,
+      item.created_at,
+      item.body,
+    ];
+  });
+};

@@ -1,7 +1,12 @@
 const format = require("pg-format");
 const db = require("../connection.js");
 
-const { formatCategories } = require("../utils/data-manipulation.js");
+const {
+  formatCategories,
+  formatUserData,
+  formatReviewData,
+  formatCommentData,
+} = require("../utils/data-manipulation.js");
 
 const seed = async (data) => {
   const { categoryData, commentData, reviewData, userData } = data;
@@ -45,35 +50,29 @@ const seed = async (data) => {
   const insertUserData = async (userData) => {
     const formattedUserData = formatUserData(userData);
     const userStr = format(
-      `INSERT INTO users (username, avatar_url, name )VALUES %L RETURNING *;`,
+      `INSERT INTO users (username, avatar_url, name) VALUES %L RETURNING *;`,
       formattedUserData
     );
     await db.query(userStr);
   };
 
-  
-  // const insertReviewData = db.query();
-  // {
-  //   title: "Settlers of Catan: Don't Settle For Less",
-  //   designer: 'Klaus Teuber',
-  //   owner: 'mallionaire',
-  //   review_img_url:
-  //     'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg',
-  //   review_body:
-  //     'You have stumbled across an uncharted island rich in natural resources, but you are not alone; other adventurers have come ashore too, and the race to settle the island of Catan has begun! Whether you exert military force, build a road to rival the Great Wall, trade goods with ships from the outside world, or some combination of all three, the aim is the same: to dominate the island. Will you prevail? Proceed strategically, trade wisely, and may the odds be in favour.',
-  //   category: 'social deduction',
-  //   created_at: new Date(788918400),
-  //   votes: 16
-  // }
+  const insertReviewData = async (reviewData) => {
+    const formattedReviewData = formatReviewData(reviewData);
+    const reviewStr = format(
+      `INSERT INTO reviews (title, review_body, designer, review_img_url, votes, category, owner, created_at) VALUES %L RETURNING *;`,
+      formattedReviewData
+    );
+    await db.query(reviewStr);
+  };
 
-  // const insertCommentData = db.query();
-  // {
-  //   body: 'I loved this game too!',
-  //   votes: 16,
-  //   author: 'bainesface',
-  //   review_id: 2,
-  //   created_at: new Date(1511354613389),
-  // }
+  const insertCommentData = async (commentData) => {
+    const formattedCommentData = formatCommentData(commentData);
+    const commentStr = format(
+      `INSERT INTO comments (author, review_id, votes, created_at, body) VALUES %L RETURNING * ;`,
+      formattedCommentData
+    );
+    await db.query(commentStr);
+  };
 
   const seedPromises = [
     dropTables,
@@ -83,6 +82,8 @@ const seed = async (data) => {
     createCommentsTable,
     insertCategoryData,
     insertUserData,
+    insertReviewData,
+    insertCommentData,
   ];
   await Promise.all(seedPromises);
 };
