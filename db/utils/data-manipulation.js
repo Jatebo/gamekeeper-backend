@@ -12,4 +12,17 @@ exports.formatUserData = (data) => {
   });
 };
 
-exports.formatReviewData = (data) => {}
+exports.formatReviewData = (data) => {
+  return data.map((item) => {
+    return [
+      item.title,
+      item.review_body,
+      item.designer,
+      item.review_img_url,
+      item.votes,
+      item.category,
+      item.owner,
+      item.created_at,
+    ];
+  });
+};

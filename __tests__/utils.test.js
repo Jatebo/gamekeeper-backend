@@ -225,4 +225,115 @@ describe("formatReviewData", () => {
     ];
     expect(formatReviewData(testInput)).toEqual(expectedOutput);
   });
+  test("should return a new array", () => {
+    const testInput = [
+      {
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+        created_at: new Date(1610964020514),
+        votes: 1,
+      },
+      {
+        title: "Jenga",
+        designer: "Leslie Scott",
+        owner: "philippaclaire9",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Fiddly fun for all the family",
+        category: "dexterity",
+        created_at: new Date(1610964101251),
+        votes: 5,
+      },
+      {
+        title: "Ultimate Werewolf",
+        designer: "Akihisa Okui",
+        owner: "bainesface",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "We couldn't find the werewolf!",
+        category: "social deduction",
+        created_at: new Date(1610964101251),
+        votes: 5,
+      },
+    ];
+    expect(formatReviewData(testInput)).not.toBe(testInput);
+  });
+  test("should not mutate the original array", () => {
+    const testInput = [
+      {
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+        created_at: new Date(1610964020514),
+        votes: 1,
+      },
+      {
+        title: "Jenga",
+        designer: "Leslie Scott",
+        owner: "philippaclaire9",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Fiddly fun for all the family",
+        category: "dexterity",
+        created_at: new Date(1610964101251),
+        votes: 5,
+      },
+      {
+        title: "Ultimate Werewolf",
+        designer: "Akihisa Okui",
+        owner: "bainesface",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "We couldn't find the werewolf!",
+        category: "social deduction",
+        created_at: new Date(1610964101251),
+        votes: 5,
+      },
+    ];
+    formatReviewData(testInput);
+    expect(testInput).toEqual([
+      {
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+        created_at: new Date(1610964020514),
+        votes: 1,
+      },
+      {
+        title: "Jenga",
+        designer: "Leslie Scott",
+        owner: "philippaclaire9",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Fiddly fun for all the family",
+        category: "dexterity",
+        created_at: new Date(1610964101251),
+        votes: 5,
+      },
+      {
+        title: "Ultimate Werewolf",
+        designer: "Akihisa Okui",
+        owner: "bainesface",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "We couldn't find the werewolf!",
+        category: "social deduction",
+        created_at: new Date(1610964101251),
+        votes: 5,
+      },
+    ]);
+  });
 });
