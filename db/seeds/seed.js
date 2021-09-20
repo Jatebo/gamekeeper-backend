@@ -36,25 +36,22 @@ const seed = async (data) => {
   const insertCategoryData = async (categoryData) => {
     const formattedCategoryData = formatCategories(categoryData);
     const categoryStr = format(
-      `INSERT INTO categories (slug, description) VALUES %L RETURNING *`,
+      `INSERT INTO categories (slug, description) VALUES %L RETURNING *;`,
       formattedCategoryData
     );
-
     await db.query(categoryStr);
   };
 
+  const insertUserData = async (userData) => {
+    const formattedUserData = formatUserData(userData);
+    const userStr = format(
+      `INSERT INTO users (username, avatar_url, name )VALUES %L RETURNING *;`,
+      formattedUserData
+    );
+    await db.query(userStr);
+  };
 
   
-  //{ slug: 'euro game', description: 'Abstact games that involve little luck' },
-
-  // const insertUserData = db.query();
-  // {
-  //   username: 'mallionaire',
-  //   name: 'haz',
-  //   avatar_url:
-  //     'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
-  // }
-
   // const insertReviewData = db.query();
   // {
   //   title: "Settlers of Catan: Don't Settle For Less",
@@ -85,6 +82,7 @@ const seed = async (data) => {
     createReviewsTable,
     createCommentsTable,
     insertCategoryData,
+    insertUserData,
   ];
   await Promise.all(seedPromises);
 };
