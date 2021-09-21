@@ -9,12 +9,18 @@ afterAll(() => db.end());
 
 describe("/api", () => {
   describe("/categories", () => {
-      it('responds with an array of category objects', async () => {
-         await request(app).get('/api/categories').expect(res.status.toBe(200).then(
-            
-         ) 
+    describe("GET", () => {
+      it("200: responds with an array of category objects", async () => {
+        const { body } = await request(app).get("/api/categories").expect(200);
+        body.categories.forEach((category) => {
+          expect(category).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
+        });
       });
+    });
   });
 
-  it("200: Responds with a JSON object describing all the available API endpoints", () => {});
+  //   it("200: Responds with a JSON object describing all the available API endpoints", () => {});
 });

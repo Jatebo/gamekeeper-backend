@@ -28,7 +28,7 @@ const seed = async (data) => {
   await db.query(
     `CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(50) REFERENCES users(username), review_id INT REFERENCES reviews(review_id), votes INT DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, body TEXT );`
   );
-  
+
   const insertCategoryData = async (categoryData) => {
     const formattedCategoryData = formatCategories(categoryData);
     const categoryStr = format(
@@ -69,37 +69,6 @@ const seed = async (data) => {
   await insertUserData(userData);
   await insertReviewData(reviewData);
   await insertCommentData(commentData);
-
 };
 
-module.exports = seed;
-
-/*
-
-        Promises way to drop & create tables:
-        return db
-          .query(`DROP TABLE IF EXISTS categories, reviews, users, comments;`)
-          .then(() => {
-            return db.query(
-              `CREATE TABLE categories (slug VARCHAR(50) PRIMARY KEY NOT NULL, description VARCHAR(200) NOT NULL);`
-            );
-          })
-          .then(() => {
-            return db.query(
-              `CREATE TABLE users (username VARCHAR(50) PRIMARY KEY NOT NULL, avatar_url TEXT, name VARCHAR(50) NOT NULL);`
-            );
-          })
-          .then(() => {
-            return db.query(
-              `CREATE TABLE reviews (review_id SERIAL PRIMARY KEY, title VARCHAR(100) NOT NULL, review_body TEXT, designer VARCHAR(50) NOT NULL, review_img_url TEXT DEFAULT 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg', votes INT DEFAULT 0, category VARCHAR(50) REFERENCES categories(slug), owner VARCHAR(50) REFERENCES users(username), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP );`
-            );
-          })
-          .then(() => {
-            return db.query(
-              `CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(50) REFERENCES users(username), review_id INT REFERENCES reviews(review_id), votes INT DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, body TEXT );`
-            );
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-          */
+module.exports = { seed };
