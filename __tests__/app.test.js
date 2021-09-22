@@ -23,7 +23,31 @@ describe("/api", () => {
     });
   });
   describe("/reviews", () => {
-    describe("GET", () => {});
+    describe("GET", () => {
+      it("200: should respond with an array of review objects", async () => {
+        const res = await request(app).get("/api/reviews").expect(200);
+        res.body.reviews.forEach((review) => {
+          // console.log(review.title);
+          expect(review).toMatchObject({
+            owner: expect.any(String),
+            title: expect.any(String),
+            review_id: expect.any(Number),
+            review_body: expect.any(String),
+            designer: expect.any(String),
+            review_img_url: expect.any(String),
+            category: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+      // it("default sort_by is created_at date", async () => {});
+      // it("accepts queries to sort by any other valid column", async () => {});
+      // it("default sort order is descending", async () => {});
+      // it("accepts queries input to sort by asc or desc if user specifies", async () => {});
+      // it("accepts category filter queries", async () => {});
+    });
     describe("/:review_id", () => {
       describe("GET", () => {
         it("200: responds with a review object with properties owner, title, review_id, review_body,designer,review_img_url, category, created_at,votes, and comment_count", async () => {

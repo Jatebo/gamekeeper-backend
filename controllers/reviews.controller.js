@@ -1,4 +1,8 @@
-const { fetchReviewByID, updateVotesByID } = require("../models/reviews.model");
+const {
+  fetchReviewByID,
+  updateVotesByID,
+  fetchReviews,
+} = require("../models/reviews.model");
 
 exports.getReviewByID = async (req, res, next) => {
   try {
@@ -18,6 +22,16 @@ exports.patchReviewVotes = async (req, res, next) => {
     // console.log(inc_votes);
     const updatedReview = await updateVotesByID(review_id, inc_votes);
     res.status(200).send({ updatedReview });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getReviews = async (req, res, next) => {
+  try {
+    const result = await fetchReviews();
+    // console.log(result, "<---- reviews in the controller");
+    res.status(200).send({ reviews: result });
   } catch (err) {
     next(err);
   }

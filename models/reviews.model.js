@@ -29,6 +29,16 @@ exports.updateVotesByID = async (review_id, votes) => {
   return result.rows[0];
 };
 
+exports.fetchReviews = async () => {
+  const result = await db.query(`
+  SELECT reviews.*,  COUNT(comments.review_id) AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  ON  comments.review_id = reviews.review_id 
+  GROUP BY reviews.review_id;`);
+  return result.rows;
+};
+
 // exports.fetchReviewByID = async (review_id) => {
 //   const resultReviews = await db.query(
 //     `SELECT *
