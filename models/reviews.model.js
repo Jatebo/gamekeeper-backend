@@ -50,11 +50,12 @@ exports.fetchReviews = async (
   if (!validColumns.includes(sort_by)) {
     return Promise.reject({
       status: 400,
-      msg: `Bad request - cannot sort by ${sort_by}`,
+      msg: "Bad request - cannot sort by " + sort_by,
     });
   }
 
   const validOrders = ["ASC", "DESC"];
+
   if (!validOrders.includes(order)) {
     return Promise.reject({
       status: 400,
@@ -63,9 +64,9 @@ exports.fetchReviews = async (
   }
 
   let reviewQueryStr = ` SELECT reviews.*,  COUNT(comments.review_id) AS comment_count
-  FROM reviews
-  LEFT JOIN comments
-  ON  comments.review_id = reviews.review_id`;
+      FROM reviews
+      LEFT JOIN comments
+      ON  comments.review_id = reviews.review_id`;
 
   const catQuery = await db.query("SELECT slug FROM categories");
 
@@ -87,7 +88,7 @@ exports.fetchReviews = async (
   }
 
   reviewQueryStr += ` GROUP BY reviews.review_id
-  ORDER BY ${sort_by} ${order}`;
+      ORDER BY ${sort_by} ${order}`;
 
   const result = await db.query(reviewQueryStr, queryValues);
   return result.rows;

@@ -59,7 +59,6 @@ describe("/api", () => {
           .get("/api/reviews?order=ASC")
           .expect(200);
         const reviewObjects = res.body.reviews;
-        console.log(reviewObjects);
         expect(reviewObjects).toBeSortedBy("created_at");
       });
       it("accepts category filter queries", async () => {
@@ -67,8 +66,31 @@ describe("/api", () => {
           .get("/api/reviews?sort_by=designer&order=ASC&filter_by=dexterity")
           .expect(200);
         const reviewObjects = res.body.reviews;
-        console.log(reviewObjects);
-        expect(reviewObjects).toBeSortedBy("designer", { descending: false });
+        reviewObjects.forEach((review) => {
+          expect(review.category).toBe("dexterity");
+        });
+      });
+      it("400: responds with a 400: Bad Request if an invalid column is used to sort by", async () => {
+        const res = await request(app)
+          .get("/api/reviews?sort_by=somethingInvalid")
+          .expect(400);
+        expect(res.body.msg).toBe(
+          "Bad request - cannot sort by somethingInvalid"
+        );
+      });
+      it("400: responds with a 400: Bad Request if an invalid sort order is used", async () => {
+        const res = await request(app)
+          .get("/api/reviews?order=DESK")
+          .expect(400);
+        expect(res.body.msg).toBe("Bad request - cannot order by DESK");
+      });
+      it("400: responds with a 400: Bad Request if an invalid filter category is used", async () => {
+        const res = await request(app)
+          .get("/api/reviews?sort_by=somethingInvalid")
+          .expect(400);
+        expect(res.body.msg).toBe(
+          "Bad request - cannot sort by somethingInvalid"
+        );
       });
     });
     describe("/:review_id", () => {
