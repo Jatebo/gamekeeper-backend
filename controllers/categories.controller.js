@@ -5,6 +5,6 @@ exports.getCategories = async (req, res, next) => {
     const result = await fetchCategories();
     res.status(200).send({ categories: result });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
