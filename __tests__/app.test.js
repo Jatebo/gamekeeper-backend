@@ -42,11 +42,34 @@ describe("/api", () => {
           });
         });
       });
-      // it("default sort_by is created_at date", async () => {});
-      // it("accepts queries to sort by any other valid column", async () => {});
-      // it("default sort order is descending", async () => {});
-      // it("accepts queries input to sort by asc or desc if user specifies", async () => {});
-      // it("accepts category filter queries", async () => {});
+      it("default sort_by is created_at date in descending order", async () => {
+        const res = await request(app).get("/api/reviews").expect(200);
+        const reviewObjects = res.body.reviews;
+        expect(reviewObjects).toBeSortedBy("created_at", { descending: true });
+      });
+      it("accepts queries to sort by any other valid column", async () => {
+        const res = await request(app)
+          .get("/api/reviews?sort_by=designer")
+          .expect(200);
+        const reviewObjects = res.body.reviews;
+        expect(reviewObjects).toBeSortedBy("designer", { descending: true });
+      });
+      it("accepts queries input to sort by asc or desc if user specifies", async () => {
+        const res = await request(app)
+          .get("/api/reviews?order=ASC")
+          .expect(200);
+        const reviewObjects = res.body.reviews;
+        console.log(reviewObjects);
+        expect(reviewObjects).toBeSortedBy("created_at");
+      });
+      it("accepts category filter queries", async () => {
+        const res = await request(app)
+          .get("/api/reviews?sort_by=designer&order=ASC&filter_by=dexterity")
+          .expect(200);
+        const reviewObjects = res.body.reviews;
+        console.log(reviewObjects);
+        expect(reviewObjects).toBeSortedBy("designer", { descending: false });
+      });
     });
     describe("/:review_id", () => {
       describe("GET", () => {
