@@ -1,5 +1,9 @@
 const express = require("express");
-const { handleCustomError } = require("./controllers/errorHandlers.controller");
+const {
+  handleCustomError,
+  handleErrorCodes,
+  handleServerErrors,
+} = require("./controllers/errorHandlers.controller");
 const { apiRouter } = require("./routers/api.router");
 const app = express();
 
@@ -12,5 +16,9 @@ app.all("*", (req, res) => {
 });
 
 app.use(handleCustomError);
+
+app.use(handleErrorCodes);
+
+app.use(handleServerErrors);
 
 module.exports = app;

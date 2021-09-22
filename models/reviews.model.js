@@ -18,6 +18,17 @@ exports.fetchReviewByID = async (review_id) => {
   return result.rows[0];
 };
 
+exports.updateVotesByID = async (review_id, votes) => {
+  const result = await db.query(
+    `UPDATE reviews SET votes = votes + $2 WHERE review_id = $1 RETURNING *;`,
+    [review_id, votes]
+  );
+  if (result.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Review not found" });
+  }
+  return result.rows[0];
+};
+
 // exports.fetchReviewByID = async (review_id) => {
 //   const resultReviews = await db.query(
 //     `SELECT *
