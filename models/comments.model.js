@@ -19,3 +19,23 @@ exports.fetchCommentsByReview = async (review_id) => {
     return Promise.reject({ status: 404, msg: "Review not found" });
   }
 };
+
+exports.writeComment = async (review_id, body) => {
+  const { username, body: commentBody } = body;
+
+  if (typeof commentBody !== "string") {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request - comment must be in text format",
+    });
+  }
+
+  const result = await db.query(
+    `INSERT INTO comments
+    (review_id, body, author)
+    VALUES ($1, $2, $3)
+    RETURNING *;`,
+    [review_id, commentBody, username]
+  );
+  return result.rows[0];
+};

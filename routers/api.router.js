@@ -7,4 +7,6 @@ apiRouter.get("/categories", getCategories);
 
 apiRouter.use("/reviews", reviewsRouter);
 
+apiRouter.get('/', ())
+
 module.exports = { apiRouter };

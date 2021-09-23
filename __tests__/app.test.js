@@ -159,7 +159,7 @@ describe("/api", () => {
         });
       });
       describe("/comments", () => {
-        describe.only("GET", () => {
+        describe("GET", () => {
           it("200: responds with an array of comment objects for the provided review id, which have properties comment_id, votes, created_at, author and body", async () => {
             const res = await request(app)
               .get("/api/reviews/2/comments")
@@ -193,12 +193,66 @@ describe("/api", () => {
               .expect(404);
             expect(res.body.msg).toBe("Review not found");
           });
-          describe("POST", () => {});
+          describe("POST", () => {
+            it("201: accepts an object containing username and body, and responds with the posted comment", async () => {
+              const res = await request(app)
+                .post("/api/reviews/1/comments")
+                .send({
+                  username: "dav3rid",
+                  body: "Wow, this was such a great game, can't believe I'm the first person to review it!!",
+                });
+              expect(201);
+              expect(res.body.comment).toMatchObject({
+                comment_id: expect.any(Number),
+                author: expect.any(String),
+                review_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                body: expect.any(String),
+              });
+            });
+            it("400: responds with bad request if the username is incorrect ", async () => {
+              const res = await request(app)
+                .post("/api/reviews/1/comments")
+                .send({
+                  username: "dav3",
+                  body: "Wow, this was such a great game, can't believe I'm the first person to review it!!",
+                });
+              expect(400);
+              expect(res.body.msg).toBe("Bad request");
+            });
+            it("400: responds with bad request if the input type is not string", async () => {
+              const res = await request(app)
+                .post("/api/reviews/1/comments")
+                .send({
+                  username: "dav3rid",
+                  body: true,
+                });
+              expect(400);
+              expect(res.body.msg).toBe(
+                "Bad request - comment must be in text format"
+              );
+            });
+            it("404: responds with a 404 if the requested review_id does not exist in the table", async () => {
+              const res = await request(app)
+                .post("/api/reviews/1121234/comments")
+                .send({
+                  username: "dav3rid",
+                  body: "Wow, this was such a great game, can't believe I'm the first person to review it!!",
+                });
+              expect(400);
+              expect(res.body.msg).toBe("Bad request");
+            });
+          });
         });
       });
     });
     describe("GET", () => {
-      it("200: Responds with a JSON object describing all the available API endpoints", () => {});
+      it("200: Responds with a JSON object describing all the available API endpoints", async () => {
+        const res = await request(app).get("/api");
+        expect(200);
+        console.log(res.body);
+      });
     });
   });
 });

@@ -1,4 +1,7 @@
-const { fetchCommentsByReview } = require("../models/comments.model");
+const {
+  fetchCommentsByReview,
+  writeComment,
+} = require("../models/comments.model");
 
 exports.getCommentsByReview = async (req, res, next) => {
   try {
@@ -11,5 +14,12 @@ exports.getCommentsByReview = async (req, res, next) => {
 };
 
 exports.postComment = async (req, res, next) => {
-  console.log(req.body);
+  try {
+    const body = req.body;
+    const { review_id } = req.params;
+    const comment = await writeComment(review_id, body);
+    res.status(201).send({ comment });
+  } catch (err) {
+    next(err);
+  }
 };
