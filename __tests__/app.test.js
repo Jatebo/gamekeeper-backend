@@ -146,6 +146,10 @@ describe("/api", () => {
             .expect(400);
           expect(res.body.msg).toBe("Bad request");
         });
+        it("400: responds with a 400 if the requested review_id is not a number ", async () => {
+          const res = await request(app).get("/api/reviews/two").expect(400);
+          expect(res.body.msg).toBe("Bad request");
+        });
         it("404: responds with a 404 when the requested review id does not exist in the table", async () => {
           const res = await request(app)
             .patch("/api/reviews/11234")
@@ -155,12 +159,46 @@ describe("/api", () => {
         });
       });
       describe("/comments", () => {
-        describe("GET", () => {});
-        describe("POST", () => {});
+        describe.only("GET", () => {
+          it("200: responds with an array of comment objects for the provided review id, which have properties comment_id, votes, created_at, author and body", async () => {
+            const res = await request(app)
+              .get("/api/reviews/2/comments")
+              .expect(200);
+            expect(res.body.comments).toHaveLength(3);
+            res.body.comments.forEach((comment) => {
+              expect(comment).toMatchObject({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+              });
+            });
+          });
+          it("200: responds with an empty array if the requested review exists but has no comments", async () => {
+            const res = await request(app)
+              .get("/api/reviews/1/comments")
+              .expect(200);
+            expect(res.body.comments).toHaveLength(0);
+          });
+          it("400: responds with a 400 if the requested review_id is not a number ", async () => {
+            const res = await request(app)
+              .get("/api/reviews/two/comments")
+              .expect(400);
+            expect(res.body.msg).toBe("Bad request");
+          });
+          it("404: responds with a 404 if the requested review_id does not exist in the table", async () => {
+            const res = await request(app)
+              .get("/api/reviews/12523/comments")
+              .expect(404);
+            expect(res.body.msg).toBe("Review not found");
+          });
+          describe("POST", () => {});
+        });
       });
     });
-  });
-  describe("GET", () => {
-    it("200: Responds with a JSON object describing all the available API endpoints", () => {});
+    describe("GET", () => {
+      it("200: Responds with a JSON object describing all the available API endpoints", () => {});
+    });
   });
 });
