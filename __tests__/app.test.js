@@ -249,9 +249,10 @@ describe("/api", () => {
     });
     describe("GET", () => {
       it("200: Responds with a JSON object describing all the available API endpoints", async () => {
+        const testEndpoints = require("../endpoints.json");
         const res = await request(app).get("/api");
         expect(200);
-        console.log(res.body);
+        expect(res.body).toEqual(testEndpoints);
       });
     });
   });
