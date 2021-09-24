@@ -7,6 +7,20 @@ const app = require("../app.js");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+describe("/", () => {
+  describe("GET", () => {
+    it("200: should display a welcome message when successfully connected to the API url", async () => {
+      const res = await request(app).get("/");
+      expect(200);
+      expect(res.body.msg).toEqual("Connected to project-gamekeeper");
+    });
+    it("404: should respond with 404 not found for any endpoints not specified in /api", async () => {
+      const res = await request(app).get("/ap");
+      expect(404);
+      expect(res.body.msg).toEqual("Page not found");
+    });
+  });
+});
 describe("/api", () => {
   describe("GET", () => {
     it("200: Responds with a JSON object describing all the available API endpoints", async () => {
@@ -14,11 +28,6 @@ describe("/api", () => {
       const res = await request(app).get("/api");
       expect(200);
       expect(res.body).toEqual(testEndpoints);
-    });
-    it("404: should respond with 404 not found for any endpoints not specified in /api", async () => {
-      const res = await request(app).get("/ap");
-      expect(404);
-      expect(res.body.msg).toEqual("Page not found");
     });
   });
   describe("/categories", () => {
