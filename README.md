@@ -12,9 +12,7 @@ The database consists of information on board game categories, website users, bo
 
 A list of all available/configured endpoints can be found at [/api](https://project-gamekeeper.herokuapp.com/api).
 
-##
-
-<br><br><br><br><br>
+<br><br><br>
 
 ## Setup instructions
 
@@ -69,6 +67,7 @@ npm run setup-dbs
 \*\* **Important - dotenv files** \*\*
 
 This projects uses dotenv, but as .env. files are listed in the .gitignore file, you need to create and define your own, saved as .env.development and .env.test. An example of the format require can be found in the .env-example file in the root directory. Make sure to replace "database_name_here" from the example with whatever you named your databases when they were set up on Psql.
+
 <br><br>
 
 ## Seeding the database
