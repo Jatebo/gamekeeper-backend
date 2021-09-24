@@ -16,6 +16,48 @@ A list of all available/configured endpoints can be found at [/api](https://proj
 
 ---
 
+fork and copy the GitHub URL of the repo, before cloning onto your machine using the command line - be sure to cd to the folder in which you'd like to clone the repo beforehand:
+
+```console
+ git clone <GitHub URL>
+```
+
+once the repo has been cloned onto the local machine, use the node package manager to install the repo's dependencies:
+
+```console
+npm install
+```
+
+in the package.json file, check that the below dependencies, scripts and jest config are showing:
+
+```json
+ "devDependencies": {
+    "jest": "^27.2.0",
+    "jest-sorted": "^1.0.12",
+    "supertest": "^6.1.6"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "pg-format": "^1.0.4"
+  }
+```
+
+```json
+ "scripts": {
+    "setup-dbs": "psql -f ./db/setup.sql",
+    "seed": "node ./db/seeds/run-seed.js",
+    "test": "NODE_ENV=test jest",
+    "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed",
+    "start": "node listen.js"
+  }
+```
+
+```json
+"jest": {"setupFilesAfterEnv": ["jest-sorted"]}
+```
+
 **Important - dotenv files**
 
 ## Node & Postgres versions
