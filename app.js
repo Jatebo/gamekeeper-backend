@@ -11,6 +11,14 @@ app.use(express.json());
 
 app.use("/api", apiRouter);
 
+app.get("/", (req, res, next) => {
+  try {
+    res.status(200).send({ msg: "Connected to project-gamekeeper" });
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use(handleCustomError);
 
 app.use(handleErrorCodes);
