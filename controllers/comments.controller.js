@@ -1,6 +1,7 @@
 const {
   fetchCommentsByReview,
   writeComment,
+  wipeComment,
 } = require("../models/comments.model");
 
 exports.getCommentsByReview = async (req, res, next) => {
@@ -20,6 +21,17 @@ exports.postComment = async (req, res, next) => {
     const comment = await writeComment(review_id, body);
     res.status(201).send({ comment });
   } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteCommentByID = async (req, res, next) => {
+  try {
+    const { comment_id } = req.params;
+    const result = await wipeComment(comment_id);
+    res.status(204).send();
+  } catch (err) {
+    console.log(err);
     next(err);
   }
 };

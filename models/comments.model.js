@@ -39,3 +39,18 @@ exports.writeComment = async (review_id, body) => {
   );
   return result.rows[0];
 };
+
+exports.wipeComment = async (review_id) => {
+  const result = await db.query(
+    `DELETE from comments
+    where comment_id = $1
+    returning *;`,
+    [review_id]
+  );
+
+  if (result.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Not found" });
+  }
+
+  return result.rows;
+};

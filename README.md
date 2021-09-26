@@ -49,7 +49,8 @@ In the package.json file, check that the below dependencies, scripts and jest co
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
     "test": "NODE_ENV=test jest",
-    "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed",
+    "seed:prod": "NODE_ENV=production DATABASE_URL=
+    $(heroku config:get DATABASE_URL) npm run seed",
     "start": "node listen.js",
   }
 ```

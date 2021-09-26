@@ -30,7 +30,7 @@ describe("/api", () => {
       expect(res.body).toEqual(testEndpoints);
     });
   });
-  describe("/categories", () => {
+  describe("/api/categories", () => {
     describe("GET", () => {
       it("200: responds with an array of category objects", async () => {
         const { body } = await request(app).get("/api/categories").expect(200);
@@ -44,7 +44,7 @@ describe("/api", () => {
       });
     });
   });
-  describe("/reviews", () => {
+  describe("/api/reviews", () => {
     describe("GET", () => {
       it("200: should respond with an array of review objects", async () => {
         const res = await request(app).get("/api/reviews").expect(200);
@@ -115,7 +115,7 @@ describe("/api", () => {
         );
       });
     });
-    describe("/:review_id", () => {
+    describe("/api/reviews/:review_id", () => {
       describe("GET", () => {
         it("200: responds with a review object with properties owner, title, review_id, review_body,designer,review_img_url, category, created_at,votes, and comment_count", async () => {
           const res = await request(app).get("/api/reviews/2").expect(200);
@@ -180,7 +180,7 @@ describe("/api", () => {
           expect(res.body.msg).toBe("Review not found");
         });
       });
-      describe("/comments", () => {
+      describe("/api/reviews/:review_id/comments", () => {
         describe("GET", () => {
           it("200: responds with an array of comment objects for the provided review id, which have properties comment_id, votes, created_at, author and body", async () => {
             const res = await request(app)
@@ -269,5 +269,31 @@ describe("/api", () => {
         });
       });
     });
+  });
+  describe.only("/api/comments/:comment_id", () => {
+    describe("DELETE", () => {
+      it("204: deletes the comment by comment ID provided in the path, and responds with a 'no content' message", async () => {
+        const res = await request(app).delete("/api/comments/2");
+        expect(204);
+        // expect(res.body.msg).toBe("No content");
+      });
+      it("400: responds with a 400 error if the comment_id is an invalid input type", async () => {
+        const res = await request(app).delete("/api/comments/two");
+        expect(400);
+        expect(res.body.msg).toBe("Bad request");
+      });
+      it("404: responds with a 404 error if the requested comment ID does not exist", async () => {
+        const res = await request(app).delete("/api/comments/12423");
+        expect(404);
+        expect(res.body.msg).toBe("Not found");
+      });
+    });
+    //   describe("PATCH", () => {});
+    // });
+    // describe("/api/users", () => {
+    //   describe("GET", () => {});
+    //   describe("/api/user/:username", () => {
+    //     describe("GET", () => {});
+    //   });
   });
 });
