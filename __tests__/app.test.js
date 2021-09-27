@@ -289,20 +289,41 @@ describe("/api", () => {
     });
     //   describe("PATCH", () => {});
     // });
-    describe("/api/users", () => {
-      describe("GET", () => {
-        it("200: responds with an array of objects, each object having a username property", async () => {
-          const res = await request(app).get("/api/users").expect(200);
-          res.body.users.forEach((user) => {
-            expect(user).toMatchObject({
-              username: expect.any(String),
-            });
+  });
+  describe("/api/users", () => {
+    describe("GET", () => {
+      it("200: responds with an array of objects, each object having a username property", async () => {
+        const res = await request(app).get("/api/users").expect(200);
+        res.body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
           });
         });
       });
-      //   describe("/api/user/:username", () => {
-      //     describe("GET", () => {});
-      //   });
+    });
+    describe("/api/user/:username", () => {
+      describe("GET", () => {
+        it("200: responds with a user object with the properties username, avatar URL and name", async () => {
+          const res = await request(app)
+            .get("/api/users/mallionaire")
+            .expect(200);
+          expect(res.body.user).toMatchObject({
+            username: expect.any(String),
+            avatar_url: expect.any(String),
+            name: expect.any(String),
+          });
+        });
+        it("400: responds with a 400 bad request when requested username is invalid", async () => {
+          const res = await request(app).get("/api/users/15").expect(400);
+          expect(res.body.msg).toBe("Bad request");
+        });
+        it("404: responds with a 404 if the requested username is non existent", async () => {
+          const res = await request(app)
+            .get("/api/users/mrUser0ne")
+            .expect(404);
+          expect(res.body.msg).toBe("User not found");
+        });
+      });
     });
   });
 });
