@@ -21,13 +21,21 @@ exports.fetchCommentsByReview = async (review_id) => {
 };
 
 exports.writeComment = async (review_id, body) => {
-  const { username, body: commentBody } = body;
-
-  if (typeof commentBody !== "string") {
+  if (!body.body || !body.username) {
     return Promise.reject({
       status: 400,
-      msg: "Bad request - comment must be in text format",
+      msg: "Bad request - missing required field",
     });
+  }
+  const { username, body: commentBody } = body;
+
+  const userQuery = await db.query(`SELECT username FROM users`);
+  const validUsers = userQuery.rows.map((user) => {
+    return user.username;
+  });
+
+  if (!validUsers.includes(username)) {
+    return Promise.reject({ status: 404, msg: "User not found" });
   }
 
   const result = await db.query(

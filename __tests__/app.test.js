@@ -49,6 +49,7 @@ describe("/api/reviews", () => {
   describe("GET", () => {
     it("200: should respond with an array of review objects", async () => {
       const res = await request(app).get("/api/reviews").expect(200);
+      expect(res.body.reviews).toHaveLength(13);
       res.body.reviews.forEach((review) => {
         expect(review).toMatchObject({
           owner: expect.any(String),
@@ -86,6 +87,7 @@ describe("/api/reviews", () => {
         .get("/api/reviews?sort_by=designer&order=ASC&filter_by=dexterity")
         .expect(200);
       const reviewObjects = res.body.reviews;
+      expect(reviewObjects).toHaveLength(1);
       reviewObjects.forEach((review) => {
         expect(review.category).toBe("dexterity");
       });
@@ -227,21 +229,20 @@ describe("/api/reviews/:review_id/comments", () => {
         body: expect.any(String),
       });
     });
-    it("400: responds with bad request if the username is incorrect ", async () => {
+    it("404: responds with bad request if the username is incorrect ", async () => {
       const res = await request(app).post("/api/reviews/1/comments").send({
         username: "dav3",
         body: "Wow, this was such a great game, can't believe I'm the first person to review it!!",
       });
-      expect(400);
-      expect(res.body.msg).toBe("Bad request");
+      expect(404);
+      expect(res.body.msg).toBe("User not found");
     });
-    it("400: responds with bad request if the input type is not string", async () => {
+    it("400: responds with bad request if the post is missing username or comment body", async () => {
       const res = await request(app).post("/api/reviews/1/comments").send({
         username: "dav3rid",
-        body: true,
       });
       expect(400);
-      expect(res.body.msg).toBe("Bad request - comment must be in text format");
+      expect(res.body.msg).toBe("Bad request - missing required field");
     });
     it("404: responds with a 404 if the requested review_id does not exist in the table", async () => {
       const res = await request(app)
@@ -274,11 +275,8 @@ describe("/api/comments/:comment_id", () => {
       const commentQry = await db.query(
         `select * from comments where comment_id = 1`
       );
-      console.log(commentQry.rows);
       const originalComment = commentQry.rows[0];
-      console.log(originalComment);
       const ogVotes = originalComment.votes;
-      console.log(ogVotes, "<<<< OG VOTES");
       const votesToInc = { inc_votes: 5 };
       const res = await request(app)
         .patch("/api/comments/1")
@@ -322,6 +320,7 @@ describe("/api/users", () => {
   describe("GET", () => {
     it("200: responds with an array of objects, each object having a username property", async () => {
       const res = await request(app).get("/api/users").expect(200);
+      expect(res.body.users).toHaveLength(4);
       res.body.users.forEach((user) => {
         expect(user).toMatchObject({
           username: expect.any(String),

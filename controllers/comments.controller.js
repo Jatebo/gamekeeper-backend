@@ -41,7 +41,6 @@ exports.patchCommentByID = async (req, res, next) => {
   try {
     const { comment_id } = req.params;
     const { inc_votes } = req.body;
-    console.log(inc_votes);
     const updatedComment = await updateCommentVotesByID(comment_id, inc_votes);
     res.status(200).send({ updatedComment });
   } catch (err) {
