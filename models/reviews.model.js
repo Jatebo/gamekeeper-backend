@@ -35,7 +35,7 @@ exports.updateReviewVotesByID = async (review_id, votes) => {
 exports.fetchReviews = async (
   sort_by = "created_at",
   order = "DESC",
-  filter_by
+  category
 ) => {
   const validColumns = [
     "review_id",
@@ -59,7 +59,7 @@ exports.fetchReviews = async (
 
   const validOrders = ["ASC", "DESC"];
 
-  if (!validOrders.includes(order)) {
+  if (!validOrders.includes(order.toUpperCase())) {
     return Promise.reject({
       status: 400,
       msg: `Bad request - cannot order by ${order}`,
@@ -77,15 +77,14 @@ exports.fetchReviews = async (
     return category.slug;
   });
   const queryValues = [];
-  // console.log(validCategories);
-  if (filter_by) {
-    if (!validCategories.includes(filter_by)) {
+  if (category) {
+    if (!validCategories.includes(category)) {
       return Promise.reject({
-        status: 400,
-        msg: `Bad request - cannot filter by ${filter_by}`,
+        status: 404,
+        msg: `Category '${category}' not found`,
       });
     } else {
-      queryValues.push(filter_by);
+      queryValues.push(category);
       reviewQueryStr += ` WHERE reviews.category = $1`;
     }
   }

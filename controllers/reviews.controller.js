@@ -27,8 +27,8 @@ exports.patchReviewVotes = async (req, res, next) => {
 
 exports.getReviews = async (req, res, next) => {
   try {
-    const { sort_by, order, filter_by } = req.query;
-    const result = await fetchReviews(sort_by, order, filter_by);
+    const { sort_by, order, category } = req.query;
+    const result = await fetchReviews(sort_by, order, category);
     res.status(200).send({ reviews: result });
   } catch (err) {
     next(err);
