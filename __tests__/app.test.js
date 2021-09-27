@@ -270,30 +270,39 @@ describe("/api", () => {
       });
     });
   });
-  describe.only("/api/comments/:comment_id", () => {
+  describe("/api/comments/:comment_id", () => {
     describe("DELETE", () => {
       it("204: deletes the comment by comment ID provided in the path, and responds with a 'no content' message", async () => {
-        const res = await request(app).delete("/api/comments/2");
-        expect(204);
+        const res = await request(app).delete("/api/comments/2").expect(204);
         // expect(res.body.msg).toBe("No content");
       });
       it("400: responds with a 400 error if the comment_id is an invalid input type", async () => {
-        const res = await request(app).delete("/api/comments/two");
-        expect(400);
+        const res = await request(app).delete("/api/comments/two").expect(400);
         expect(res.body.msg).toBe("Bad request");
       });
       it("404: responds with a 404 error if the requested comment ID does not exist", async () => {
-        const res = await request(app).delete("/api/comments/12423");
-        expect(404);
+        const res = await request(app)
+          .delete("/api/comments/12423")
+          .expect(404);
         expect(res.body.msg).toBe("Not found");
       });
     });
     //   describe("PATCH", () => {});
     // });
-    // describe("/api/users", () => {
-    //   describe("GET", () => {});
-    //   describe("/api/user/:username", () => {
-    //     describe("GET", () => {});
-    //   });
+    describe("/api/users", () => {
+      describe("GET", () => {
+        it("200: responds with an array of objects, each object having a username property", async () => {
+          const res = await request(app).get("/api/users").expect(200);
+          res.body.users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+            });
+          });
+        });
+      });
+      //   describe("/api/user/:username", () => {
+      //     describe("GET", () => {});
+      //   });
+    });
   });
 });

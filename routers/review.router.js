@@ -19,4 +19,4 @@ reviewsRouter
   .get(getCommentsByReview)
   .post(postComment);
 
-module.exports = { reviewsRouter };
+module.exports = reviewsRouter;

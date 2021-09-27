@@ -1,6 +1,7 @@
 const { getCategories } = require("../controllers/categories.controller");
-const { reviewsRouter } = require("./review.router");
+const reviewsRouter = require("./review.router");
 const commentsRouter = require("./comments.router");
+const usersRouter = require("./users.router");
 
 const endpoints = require("../endpoints.json");
 
@@ -11,6 +12,8 @@ apiRouter.get("/categories", getCategories);
 apiRouter.use("/reviews", reviewsRouter);
 
 apiRouter.use("/comments", commentsRouter);
+
+apiRouter.use("/users", usersRouter);
 
 apiRouter.get("/", (req, res, next) => {
   try {
