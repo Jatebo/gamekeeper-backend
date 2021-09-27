@@ -18,7 +18,10 @@ exports.fetchReviewByID = async (review_id) => {
   return result.rows[0];
 };
 
-exports.updateVotesByID = async (review_id, votes) => {
+exports.updateReviewVotesByID = async (review_id, votes) => {
+  if (typeof votes !== "number") {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
   const result = await db.query(
     `UPDATE reviews SET votes = votes + $2 WHERE review_id = $1 RETURNING *;`,
     [review_id, votes]

@@ -1,6 +1,6 @@
 const {
   fetchReviewByID,
-  updateVotesByID,
+  updateReviewVotesByID,
   fetchReviews,
 } = require("../models/reviews.model");
 
@@ -18,7 +18,7 @@ exports.patchReviewVotes = async (req, res, next) => {
   try {
     const { review_id } = req.params;
     const { inc_votes } = req.body;
-    const updatedReview = await updateVotesByID(review_id, inc_votes);
+    const updatedReview = await updateReviewVotesByID(review_id, inc_votes);
     res.status(200).send({ updatedReview });
   } catch (err) {
     next(err);

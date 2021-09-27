@@ -54,3 +54,17 @@ exports.wipeComment = async (review_id) => {
 
   return result.rows;
 };
+
+exports.updateCommentVotesByID = async (comment_id, votes) => {
+  if (typeof votes !== "number") {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  const result = await db.query(
+    `UPDATE comments SET votes = votes + $2 WHERE comment_id = $1 RETURNING *;`,
+    [comment_id, votes]
+  );
+  if (result.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Comment not found" });
+  }
+  return result.rows[0];
+};
