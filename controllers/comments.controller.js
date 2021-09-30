@@ -33,7 +33,6 @@ exports.deleteCommentByID = async (req, res, next) => {
     const result = await wipeComment(comment_id);
     res.status(204).send();
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };
