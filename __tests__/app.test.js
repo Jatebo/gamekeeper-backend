@@ -297,6 +297,26 @@ describe("/api/reviews/:review_id", () => {
       expect(res.body.msg).toBe("Review not found");
     });
   });
+  describe.only("DELETE", () => {
+    it("204: deletes the review by review ID provided in the path", async () => {
+      const res = await request(app).delete("/api/reviews/2").expect(204);
+    });
+    it("204: deletes the comments associated with the review ID provided in the path", async () => {
+      const res = await request(app).delete("/api/reviews/2").expect(204);
+      const commentQuery = await db.query(
+        `SELECT * FROM comments WHERE review_id = 2;`
+      );
+      expect(commentQuery.rows).toHaveLength(0);
+    });
+    it("400: responds with a 400 error if the review_id is an invalid input type", async () => {
+      const res = await request(app).delete("/api/reviews/two").expect(400);
+      expect(res.body.msg).toBe("Bad request");
+    });
+    it("404: responds with a 404 error if the requested review ID does not exist", async () => {
+      const res = await request(app).delete("/api/reviews/12423").expect(404);
+      expect(res.body.msg).toBe("Not found");
+    });
+  });
 });
 describe("/api/reviews/:review_id/comments", () => {
   describe("GET", () => {
@@ -395,7 +415,7 @@ describe("/api/reviews/:review_id/comments", () => {
 });
 describe("/api/comments/:comment_id", () => {
   describe("DELETE", () => {
-    it("204: deletes the comment by comment ID provided in the path, and responds with a 'no content' message", async () => {
+    it("204: deletes the comment by comment ID provided in the path", async () => {
       const res = await request(app).delete("/api/comments/2").expect(204);
     });
     it("400: responds with a 400 error if the comment_id is an invalid input type", async () => {
