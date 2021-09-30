@@ -44,6 +44,62 @@ describe("/api/categories", () => {
       });
     });
   });
+  describe("POST", () => {
+    it("201: accepts an object containing owner, title, review_body, designer and category, and responds with the posted review (including review_id, votes, created_at and comment_count)", async () => {
+      const res = await request(app).post("/api/reviews").send({
+        owner: "dav3rid",
+        title: "GRAFFITI- the Game: BEST GAME EVER",
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        category: "dexterity",
+      });
+      expect(201);
+      expect(res.body.review).toMatchObject({
+        owner: "dav3rid",
+        title: "GRAFFITI- the Game: BEST GAME EVER",
+        review_id: 14,
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        review_img_url: `https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg`,
+        category: "dexterity",
+        created_at: expect.any(String),
+        votes: 0,
+        comment_count: "0",
+      });
+    });
+    it("404: responds with not found if the username or category is incorrect ", async () => {
+      let res = await request(app).post("/api/reviews").send({
+        owner: "dave",
+        title: "GRAFITTI- the Game: BEST GAME EVER",
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        category: "dexterity",
+      });
+      expect(404);
+      expect(res.body.msg).toBe("User/Owner not found");
+
+      res = await request(app).post("/api/reviews").send({
+        owner: "dav3rid",
+        title: "GRAFITTI- the Game: BEST GAME EVER",
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        category: "random-category",
+      });
+      expect(404);
+      expect(res.body.msg).toBe("Category not found");
+    });
+    it("400: responds with bad request if the post is missing owner, title, designer, category or review_body", async () => {
+      const res = await request(app).post("/api/reviews").send({
+        owner: "dav3rid",
+      });
+      expect(400);
+      expect(res.body.msg).toBe("Bad request - missing required field");
+    });
+  });
 });
 describe("/api/reviews", () => {
   describe("GET", () => {
@@ -135,58 +191,43 @@ describe("/api/reviews", () => {
   });
   describe("POST", () => {
     it("201: accepts an object containing owner, title, review_body, designer and category, and responds with the posted review (including review_id, votes, created_at and comment_count)", async () => {
-      const res = await request(app).post("/api/reviews").send({
-        owner: "dav3rid",
-        title: "GRAFFITI- the Game: BEST GAME EVER",
-        review_body:
-          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
-        designer: "Banksy",
-        category: "dexterity",
+      const res = await request(app).post("/api/categories").send({
+        slug: "new-category",
+        description: "category description here",
       });
       expect(201);
-      expect(res.body.review).toMatchObject({
-        owner: "dav3rid",
-        title: "GRAFFITI- the Game: BEST GAME EVER",
-        review_id: 14,
-        review_body:
-          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
-        designer: "Banksy",
-        review_img_url: `https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg`,
-        category: "dexterity",
-        created_at: expect.any(String),
-        votes: 0,
-        comment_count: "0",
+      expect(res.body.category).toMatchObject({
+        slug: "new-category",
+        description: "category description here",
       });
     });
-    it("404: responds with not found if the username or category is incorrect ", async () => {
-      let res = await request(app).post("/api/reviews").send({
-        owner: "dave",
-        title: "GRAFITTI- the Game: BEST GAME EVER",
-        review_body:
-          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
-        designer: "Banksy",
-        category: "dexterity",
+    it("201: ignores irrelevant fields passed in the request body", async () => {
+      let res = await request(app).post("/api/categories").send({
+        slug: "new-category",
+        description: "category description here",
+        randomProperty: "whoops",
+        other: "yes",
       });
-      expect(404);
-      expect(res.body.msg).toBe("User/Owner not found");
-
-      res = await request(app).post("/api/reviews").send({
-        owner: "dav3rid",
-        title: "GRAFITTI- the Game: BEST GAME EVER",
-        review_body:
-          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
-        designer: "Banksy",
-        category: "random-category",
+      expect(201);
+      expect(res.body.category).toMatchObject({
+        slug: "new-category",
+        description: "category description here",
       });
-      expect(404);
-      expect(res.body.msg).toBe("Category not found");
     });
-    it("400: responds with bad request if the post is missing owner, title, designer, category or review_body", async () => {
-      const res = await request(app).post("/api/reviews").send({
+    it("400: responds with bad request if the post is missing slug or description", async () => {
+      const res = await request(app).post("/api/categories").send({
         owner: "dav3rid",
       });
       expect(400);
       expect(res.body.msg).toBe("Bad request - missing required field");
+    });
+    it("400: responds with bad request if user tries to add a category that already exists", async () => {
+      const res = await request(app).post("/api/categories").send({
+        slug: "dexterity",
+        description: "category description here",
+      });
+      expect(400);
+      expect(res.body.msg).toBe("Bad request - category already exists");
     });
   });
 });
