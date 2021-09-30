@@ -26,7 +26,7 @@ const seed = async (data) => {
   );
 
   await db.query(
-    `CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(50) REFERENCES users(username), review_id INT REFERENCES reviews(review_id), votes INT DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, body TEXT );`
+    `CREATE TABLE comments (comment_id SERIAL PRIMARY KEY, author VARCHAR(50) REFERENCES users(username), review_id INT REFERENCES reviews(review_id) ON DELETE CASCADE, votes INT DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, body TEXT );`
   );
 
   const insertCategoryData = async (categoryData) => {

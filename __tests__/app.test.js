@@ -297,7 +297,7 @@ describe("/api/reviews/:review_id", () => {
       expect(res.body.msg).toBe("Review not found");
     });
   });
-  describe.only("DELETE", () => {
+  describe("DELETE", () => {
     it("204: deletes the review by review ID provided in the path", async () => {
       const res = await request(app).delete("/api/reviews/2").expect(204);
     });

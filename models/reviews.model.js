@@ -168,3 +168,18 @@ exports.writeReview = async (body) => {
   );
   return newReview.rows[0];
 };
+
+exports.eraseReview = async (review_id) => {
+  const result = await db.query(
+    `DELETE from reviews
+    where review_id = $1
+    returning *;`,
+    [review_id]
+  );
+
+  if (result.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Not found" });
+  }
+
+  return result.rows;
+};
