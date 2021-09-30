@@ -1,11 +1,21 @@
 const db = require("../db/connection");
 
-exports.fetchCommentsByReview = async (review_id) => {
+exports.fetchCommentsByReview = async (review_id, limit = 10, p = 1) => {
+  if (!Number(limit) || !Number(p)) {
+    return Promise.reject({
+      status: 400,
+      msg: `Limit and page must be numbers`,
+    });
+  }
+
+  const offset = (p - 1) * limit;
+
   const result = await db.query(
     `SELECT comment_id, votes, created_at, author, body
      FROM comments
-     WHERE review_id = $1;`,
-    [review_id]
+     WHERE review_id = $1
+     LIMIT $2 OFFSET $3;`,
+    [review_id, limit, offset]
   );
 
   const reviewQuery = await db.query(`SELECT review_id FROM reviews`);

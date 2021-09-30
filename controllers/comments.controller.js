@@ -8,7 +8,8 @@ const {
 exports.getCommentsByReview = async (req, res, next) => {
   try {
     const { review_id } = req.params;
-    const comments = await fetchCommentsByReview(review_id);
+    const { limit, p } = req.query;
+    const comments = await fetchCommentsByReview(review_id, limit, p);
     res.status(200).send({ comments });
   } catch (err) {
     next(err);

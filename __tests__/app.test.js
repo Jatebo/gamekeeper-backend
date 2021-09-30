@@ -220,6 +220,16 @@ describe("/api/reviews/:review_id/comments", () => {
       const res = await request(app).get("/api/reviews/1/comments").expect(200);
       expect(res.body.comments).toHaveLength(0);
     });
+    it.only("200: accepts limit and page input for pagination, defaulting to a limit of 10 comments", async () => {
+      let res = await request(app)
+        .get("/api/reviews/2/comments?limit=1")
+        .expect(200);
+      expect(res.body.comments).toHaveLength(1);
+      res = await request(app)
+        .get("/api/reviews/2/comments?limit=2&p=2")
+        .expect(200);
+      expect(res.body.comments).toHaveLength(1);
+    });
     it("400: responds with a 400 if the requested review_id is not a number ", async () => {
       const res = await request(app)
         .get("/api/reviews/two/comments")
@@ -231,6 +241,16 @@ describe("/api/reviews/:review_id/comments", () => {
         .get("/api/reviews/12523/comments")
         .expect(404);
       expect(res.body.msg).toBe("Review not found");
+    });
+    it.only("400: responds with a 400: Bad Request if an invalid limit or page is input", async () => {
+      let res = await request(app)
+        .get("/api/reviews/2/comments?limit=;one")
+        .expect(400);
+      expect(res.body.msg).toBe("Limit and page must be numbers");
+      res = await request(app)
+        .get("/api/reviews/2/comments?limit=1&p=;two")
+        .expect(400);
+      expect(res.body.msg).toBe("Limit and page must be numbers");
     });
   });
   describe("POST", () => {
