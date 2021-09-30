@@ -14,11 +14,11 @@ const seed = async (data) => {
   await db.query(`DROP TABLE IF EXISTS comments, reviews, users, categories;`);
 
   await db.query(
-    `CREATE TABLE categories (slug VARCHAR(50) PRIMARY KEY NOT NULL, description VARCHAR(200) NOT NULL);`
+    `CREATE TABLE categories (slug VARCHAR(50) PRIMARY KEY, description VARCHAR(200) NOT NULL);`
   );
 
   await db.query(
-    `CREATE TABLE users (username VARCHAR(50) PRIMARY KEY NOT NULL, avatar_url TEXT, name VARCHAR(50) NOT NULL);`
+    `CREATE TABLE users (username VARCHAR(50) PRIMARY KEY, avatar_url TEXT, name VARCHAR(50) NOT NULL);`
   );
 
   await db.query(

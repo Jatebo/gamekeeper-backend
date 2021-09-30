@@ -114,3 +114,57 @@ exports.fetchReviews = async (
   reviewsAndTotal.total_count = Number(totalReviews.rows[0].count);
   return reviewsAndTotal;
 };
+
+exports.writeReview = async (body) => {
+  if (
+    !body.review_body ||
+    !body.owner ||
+    !body.title ||
+    !body.designer ||
+    !body.category
+  ) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request - missing required field",
+    });
+  }
+  const { owner, title, review_body, designer, category } = body;
+
+  const userQuery = await db.query(`SELECT username FROM users`);
+  const validUsers = userQuery.rows.map((user) => {
+    return user.username;
+  });
+
+  if (!validUsers.includes(owner)) {
+    return Promise.reject({ status: 404, msg: "User/Owner not found" });
+  }
+
+  const catQuery = await db.query(`SELECT slug FROM categories`);
+  const validCategories = catQuery.rows.map((cat) => {
+    return cat.slug;
+  });
+  if (!validCategories.includes(category)) {
+    return Promise.reject({ status: 404, msg: "Category not found" });
+  }
+
+  const result = await db.query(
+    `INSERT INTO reviews
+      (owner, title, review_body, designer, category)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;`,
+    [owner, title, review_body, designer, category]
+  );
+
+  const newReview = await db.query(
+    `SELECT
+  reviews.*,
+  COUNT(comments.review_id) AS comment_count
+  FROM reviews
+  LEFT JOIN comments
+  ON  comments.review_id = reviews.review_id
+  WHERE reviews.review_id = $1
+  GROUP BY reviews.review_id;`,
+    [result.rows[0].review_id]
+  );
+  return newReview.rows[0];
+};

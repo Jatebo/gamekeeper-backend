@@ -133,6 +133,62 @@ describe("/api/reviews", () => {
       expect(res.body.msg).toBe("Limit and page must be numbers");
     });
   });
+  describe("POST", () => {
+    it("201: accepts an object containing owner, title, review_body, designer and category, and responds with the posted review (including review_id, votes, created_at and comment_count)", async () => {
+      const res = await request(app).post("/api/reviews").send({
+        owner: "dav3rid",
+        title: "GRAFFITI- the Game: BEST GAME EVER",
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        category: "dexterity",
+      });
+      expect(201);
+      expect(res.body.review).toMatchObject({
+        owner: "dav3rid",
+        title: "GRAFFITI- the Game: BEST GAME EVER",
+        review_id: 14,
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        review_img_url: `https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg`,
+        category: "dexterity",
+        created_at: expect.any(String),
+        votes: 0,
+        comment_count: "0",
+      });
+    });
+    it("404: responds with not found if the username or category is incorrect ", async () => {
+      let res = await request(app).post("/api/reviews").send({
+        owner: "dave",
+        title: "GRAFITTI- the Game: BEST GAME EVER",
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        category: "dexterity",
+      });
+      expect(404);
+      expect(res.body.msg).toBe("User/Owner not found");
+
+      res = await request(app).post("/api/reviews").send({
+        owner: "dav3rid",
+        title: "GRAFITTI- the Game: BEST GAME EVER",
+        review_body:
+          "Wow, this was such a great game, can't believe I'm the first person to review it!! I pushed my luck a bit too hard though, and got caught by the feds before I became famous",
+        designer: "Banksy",
+        category: "random-category",
+      });
+      expect(404);
+      expect(res.body.msg).toBe("Category not found");
+    });
+    it("400: responds with bad request if the post is missing owner, title, designer, category or review_body", async () => {
+      const res = await request(app).post("/api/reviews").send({
+        owner: "dav3rid",
+      });
+      expect(400);
+      expect(res.body.msg).toBe("Bad request - missing required field");
+    });
+  });
 });
 describe("/api/reviews/:review_id", () => {
   describe("GET", () => {
@@ -220,7 +276,7 @@ describe("/api/reviews/:review_id/comments", () => {
       const res = await request(app).get("/api/reviews/1/comments").expect(200);
       expect(res.body.comments).toHaveLength(0);
     });
-    it.only("200: accepts limit and page input for pagination, defaulting to a limit of 10 comments", async () => {
+    it("200: accepts limit and page input for pagination, defaulting to a limit of 10 comments", async () => {
       let res = await request(app)
         .get("/api/reviews/2/comments?limit=1")
         .expect(200);
@@ -242,7 +298,7 @@ describe("/api/reviews/:review_id/comments", () => {
         .expect(404);
       expect(res.body.msg).toBe("Review not found");
     });
-    it.only("400: responds with a 400: Bad Request if an invalid limit or page is input", async () => {
+    it("400: responds with a 400: Bad Request if an invalid limit or page is input", async () => {
       let res = await request(app)
         .get("/api/reviews/2/comments?limit=;one")
         .expect(400);
@@ -257,7 +313,7 @@ describe("/api/reviews/:review_id/comments", () => {
     it("201: accepts an object containing username and body, and responds with the posted comment", async () => {
       const res = await request(app).post("/api/reviews/1/comments").send({
         username: "dav3rid",
-        body: "Wow, this was such a great game, can't believe I'm the first person to review it!!",
+        body: "Wow, this was such a great game review, can't believe I'm the first person to comment on it!!",
       });
       expect(201);
       expect(res.body.comment).toMatchObject({
@@ -269,7 +325,7 @@ describe("/api/reviews/:review_id/comments", () => {
         body: expect.any(String),
       });
     });
-    it("404: responds with bad request if the username is incorrect ", async () => {
+    it("404: responds with not found if the username is does not exist in the database ", async () => {
       const res = await request(app).post("/api/reviews/1/comments").send({
         username: "dav3",
         body: "Wow, this was such a great game, can't believe I'm the first person to review it!!",
@@ -284,7 +340,7 @@ describe("/api/reviews/:review_id/comments", () => {
       expect(400);
       expect(res.body.msg).toBe("Bad request - missing required field");
     });
-    it("404: responds with a 404 if the requested review_id does not exist in the table", async () => {
+    it("404: responds with a 404 if the requested review_id does not exist in the database", async () => {
       const res = await request(app)
         .post("/api/reviews/1121234/comments")
         .send({
