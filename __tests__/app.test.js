@@ -62,9 +62,9 @@ describe("/api/reviews", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           comment_count: expect.any(String),
-          total_count: expect(13),
         });
       });
+      expect(res.body.total_count).toBe(13);
     });
     it("200: default sort_by is created_at date in descending order", async () => {
       const res = await request(app).get("/api/reviews").expect(200);
@@ -125,6 +125,12 @@ describe("/api/reviews", () => {
         .get("/api/reviews?category=bananas")
         .expect(404);
       expect(res.body.msg).toBe("Category 'bananas' not found");
+    });
+    it("400: responds with a 400: Bad Request if an invalid limit or page is input", async () => {
+      let res = await request(app).get("/api/reviews?limit=;ten").expect(400);
+      expect(res.body.msg).toBe("Limit and page must be numbers");
+      res = await request(app).get("/api/reviews?p=;ten").expect(400);
+      expect(res.body.msg).toBe("Limit and page must be numbers");
     });
   });
 });

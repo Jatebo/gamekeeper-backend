@@ -35,7 +35,9 @@ exports.updateReviewVotesByID = async (review_id, votes) => {
 exports.fetchReviews = async (
   sort_by = "created_at",
   order = "DESC",
-  category
+  category,
+  limit = 10,
+  p = 1
 ) => {
   const validColumns = [
     "review_id",
@@ -69,14 +71,17 @@ exports.fetchReviews = async (
   let reviewQueryStr = ` SELECT reviews.*,  COUNT(comments.review_id) AS comment_count
       FROM reviews
       LEFT JOIN comments
-      ON  comments.review_id = reviews.review_id`;
+      ON  comments.review_id = reviews.review_id
+      `;
 
   const catQuery = await db.query("SELECT slug FROM categories");
 
   const validCategories = catQuery.rows.map((category) => {
     return category.slug;
   });
+
   const queryValues = [];
+
   if (category) {
     if (!validCategories.includes(category)) {
       return Promise.reject({
@@ -89,9 +94,23 @@ exports.fetchReviews = async (
     }
   }
 
+  if (!Number(limit) || !Number(p)) {
+    return Promise.reject({
+      status: 400,
+      msg: `Limit and page must be numbers`,
+    });
+  }
+  const offset = (p - 1) * limit;
+
+  const totalReviews = await db.query(`SELECT Count(review_id) FROM reviews;`);
+
   reviewQueryStr += ` GROUP BY reviews.review_id
-      ORDER BY ${sort_by} ${order}`;
+      ORDER BY ${sort_by} ${order}
+      LIMIT ${limit} OFFSET ${offset}`;
 
   const result = await db.query(reviewQueryStr, queryValues);
-  return result.rows;
+  const reviewsAndTotal = {};
+  reviewsAndTotal.result = result.rows;
+  reviewsAndTotal.total_count = Number(totalReviews.rows[0].count);
+  return reviewsAndTotal;
 };
