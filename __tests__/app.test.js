@@ -47,9 +47,9 @@ describe("/api/categories", () => {
 });
 describe("/api/reviews", () => {
   describe("GET", () => {
-    it("200: should respond with an array of review objects", async () => {
+    it("200: should respond with an array of review objects, using pagination with a default of 10 results per page", async () => {
       const res = await request(app).get("/api/reviews").expect(200);
-      expect(res.body.reviews).toHaveLength(13);
+      expect(res.body.reviews).toHaveLength(10);
       res.body.reviews.forEach((review) => {
         expect(review).toMatchObject({
           owner: expect.any(String),
@@ -62,6 +62,7 @@ describe("/api/reviews", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           comment_count: expect.any(String),
+          total_count: expect(13),
         });
       });
     });
@@ -99,22 +100,32 @@ describe("/api/reviews", () => {
       const reviewObjects = res.body.reviews;
       expect(reviewObjects).toHaveLength(0);
     });
-  });
-  it("400: responds with a 400: Bad Request if an invalid column is used to sort by", async () => {
-    const res = await request(app)
-      .get("/api/reviews?sort_by=somethingInvalid")
-      .expect(400);
-    expect(res.body.msg).toBe("Bad request - cannot sort by somethingInvalid");
-  });
-  it("400: responds with a 400: Bad Request if an invalid sort order is used", async () => {
-    const res = await request(app).get("/api/reviews?order=DESK").expect(400);
-    expect(res.body.msg).toBe("Bad request - cannot order by DESK");
-  });
-  it("404: responds with a 404: Not Found if an invalid category is specified", async () => {
-    const res = await request(app)
-      .get("/api/reviews?category=bananas")
-      .expect(404);
-    expect(res.body.msg).toBe("Category 'bananas' not found");
+    it("200: accepts user determined limits", async () => {
+      const res = await request(app).get("/api/reviews?limit=5").expect(200);
+      expect(res.body.reviews).toHaveLength(5);
+    });
+    it("200: accepts page input", async () => {
+      const res = await request(app).get("/api/reviews?p=2").expect(200);
+      expect(res.body.reviews).toHaveLength(3);
+    });
+    it("400: responds with a 400: Bad Request if an invalid column is used to sort by", async () => {
+      const res = await request(app)
+        .get("/api/reviews?sort_by=somethingInvalid")
+        .expect(400);
+      expect(res.body.msg).toBe(
+        "Bad request - cannot sort by somethingInvalid"
+      );
+    });
+    it("400: responds with a 400: Bad Request if an invalid sort order is used", async () => {
+      const res = await request(app).get("/api/reviews?order=DESK").expect(400);
+      expect(res.body.msg).toBe("Bad request - cannot order by DESK");
+    });
+    it("404: responds with a 404: Not Found if an invalid category is specified", async () => {
+      const res = await request(app)
+        .get("/api/reviews?category=bananas")
+        .expect(404);
+      expect(res.body.msg).toBe("Category 'bananas' not found");
+    });
   });
 });
 describe("/api/reviews/:review_id", () => {
