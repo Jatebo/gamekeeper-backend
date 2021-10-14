@@ -1,4 +1,7 @@
-const { getCategories, postCategory } = require("../controllers/categories.controller");
+const {
+  getCategories,
+  postCategory,
+} = require("../controllers/categories.controller");
 const reviewsRouter = require("./review.router");
 const commentsRouter = require("./comments.router");
 const usersRouter = require("./users.router");
