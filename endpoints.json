@@ -14,9 +14,40 @@
       ]
     }
   },
+  // POST CATEGORIES NEEDS DOING
+  "POST /api/categories": {
+    "description": "",
+    "queries": [],
+    "exampleResponse": {
+      "categories": [
+        {
+          "description": "Players attempt to uncover each other's hidden role",
+          "slug": "Social deduction"
+        }
+      ]
+    }
+  },
   "GET /api/reviews": {
     "description": "serves an array of all reviews",
     "queries": ["category", "sort_by", "order"],
+    "exampleResponse": {
+      "reviews": [
+        {
+          "title": "One Night Ultimate Werewolf",
+          "designer": "Akihisa Okui",
+          "owner": "happyamy2016",
+          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "category": "hidden-roles",
+          "created_at": 1610964101251,
+          "votes": 5
+        }
+      ]
+    }
+  },
+  // POST REVIEWS NEEDS DOING
+  "POST /api/reviews": {
+    "description": "serves an array of all reviews",
+    "queries": [],
     "exampleResponse": {
       "reviews": [
         {
@@ -52,6 +83,27 @@
   },
   "PATCH /api/reviews/:review_id": {
     "description": "updates total votes of the provided review ID by the value specified in the body of the request, and serves the updated review object",
+    "examplePath": "/api/reviews/1",
+    "exampleRequest": { "inc_votes": 5 },
+    "exampleResponse": {
+      "review": {
+        "review_id": 1,
+        "title": "Culture a Love of Agriculture With Agricola",
+        "review_body": "You could sum up Agricola with the simple phrase 'Farmyeard Fun' but the mechanics and game play add so much more than that. You'll find yourself torn between breeding pigs, or sowing crops. Its joyeous and rewarding and it makes you think of time spent outside, which is much harder to do these days!",
+        "designer": "Uwe Rosenberg",
+        "review_img_url": "https://images.pexels.com/photos/4917821/pexels-photo-4917821.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "votes": 6,
+        "category": "strategy",
+        "owner": "tickle122",
+        "created_at": "2021-01-18T10:00:20.514Z",
+        "comment_count": "3"
+      }
+    }
+  },
+
+  //DELETE REVIEWS BY ID NEEDS DOING
+  "DELETE /api/reviews/:review_id": {
+    "description": "updates total votes of the provided review ID by the value specified in the body of the request, and serves the updated review object",
     "queries": [],
     "examplePath": "/api/reviews/1",
     "exampleRequest": { "inc_votes": 5 },
@@ -70,6 +122,8 @@
       }
     }
   },
+
+
   "GET /api/reviews/:review_id/comments": {
     "description": "serves a comments object for the specified review ID, containing an array of all comments for the review",
     "queries": [],
@@ -117,6 +171,71 @@
         "created_at": "2021-09-23T17:09:38.518Z",
         "body": "Wow, this was such a great game, can't believe I'm the first person to review it!!"
       }
+    }
+  },
+
+  //PATCH COMMENTS NEEDS DOING
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates total votes of the provided review ID by the value specified in the body of the request, and serves the updated review object",
+    "queries": [],
+    "examplePath": "/api/reviews/1",
+    "exampleRequest": { "inc_votes": 5 },
+    "exampleResponse": {
+      "review": {
+        "review_id": 1,
+        "title": "Culture a Love of Agriculture With Agricola",
+        "review_body": "You could sum up Agricola with the simple phrase 'Farmyeard Fun' but the mechanics and game play add so much more than that. You'll find yourself torn between breeding pigs, or sowing crops. Its joyeous and rewarding and it makes you think of time spent outside, which is much harder to do these days!",
+        "designer": "Uwe Rosenberg",
+        "review_img_url": "https://images.pexels.com/photos/4917821/pexels-photo-4917821.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "votes": 6,
+        "category": "strategy",
+        "owner": "tickle122",
+        "created_at": "2021-01-18T10:00:20.514Z",
+        "comment_count": "3"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the comment with the provided comment ID responding with a 204 status and no content",
+    "examplePath": "/api/comments/1"
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "mallionaire",
+          "name": "haz",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        },
+        {
+          "username": "philippaclaire9",
+          "name": "philippa",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        },
+        {
+          "username": "bainesface",
+          "name": "sarah",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        },
+        {
+          "username": "dav3rid",
+          "name": "dave",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves a user object for the specified user ID",
+    "exampleResponse": {
+      "user": [
+        {
+          "username": "mallionaire",
+          "name": "haz",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
     }
   }
 }
