@@ -14,6 +14,7 @@ exports.fetchCommentsByReview = async (review_id, limit = 10, p = 1) => {
     `SELECT comment_id, votes, created_at, author, body
      FROM comments
      WHERE review_id = $1
+     ORDER BY votes DESC
      LIMIT $2 OFFSET $3;`,
     [review_id, limit, offset]
   );
